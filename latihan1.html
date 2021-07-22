@@ -5,22 +5,43 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arimo&display=swap">
+    <style>
+        body {
+            margin: 5%;
+            font-family: 'Arimo', sans-serif;
+        }
+    </style>
 </head>
 <body>
     <div id='app'>
         <header>
 
-            <h1>what is vue</h1>
-            <h1 v-once>my name is {{ name }}</h1>   
+            <!--<img src="{{ gambar }}" alt="VueJs" width="80"/>-->
+            <!-- <img v-bind:src="gambar" alt="VueJs" width="80"/> -->
+            <img :src="gambar" alt="VueJs" width="80"/> <!-- shortcut dari vue bind -->
+            
+            <!-- untuk mencetak nama dari directive data object binding -->
+            <h1 v-once>My Name is {{ name }}</h1>
+            <br/>
+
             <!-- menambahkan directive vue dengan v-once === tidak akan diuypdate/tetap/constan -->
-            <h1>{{ isActive ? "active" : "not active" }}</h1>
-            <h1>{{ bilangan }}</h1>
-            <p>bilangan ini adalah {{ infoBilangan }}</p>
+            <!-- menggunakan vue directive -->
+            <h2 v-html='link'></h2> <!-- directive binding untuk mencetak html didalam html -->
+            <h2 v-text='link'></h2> <!-- directive binding untuk mencetak data didalam html -->
+            <h2 v-text='pesan'></h2>
+            <br/>
+
+            <p>isActive pada data binding adalah {{ isActive ? "Active" : "Not Active" }}</p>
+            <p>{{ bilangan }} adalah bilangan {{ infoBilangan }}</p>
+            <br/>
+
+            <p>The progressive javascript framework</p>
             
         </header>
 
         <footer id='footer'>
-            <p>copyright 2019</p>
+            <p>Copyright 2019</p>
         </footer>
     </div>
     
@@ -29,12 +50,14 @@
 
         const member = {
             name: "Budi",
-            pesan: "ini pesan dari data",
+            pesan: "Ini pesan dari data binding",
             isActive: true,
             qty: 1,
             namaDepan: 'budi',
             namaBelakang: 'anto',
             bilangan: 3,
+            link: '<a href="#">ini link dari data binding</a>',
+            gambar: './images/vue.png'
         }
 
         const vm = new Vue({
