@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id='app'>
+        <header>
+
+            <h1>what is vue</h1>
+            <h1 v-once>my name is {{ name }}</h1>   
+            <!-- menambahkan directive vue dengan v-once === tidak akan diuypdate/tetap/constan -->
+            <h1>{{ isActive ? "active" : "not active" }}</h1>
+            <h1>{{ bilangan }}</h1>
+            <p>bilangan ini adalah {{ infoBilangan }}</p>
+            
+        </header>
+
+        <footer id='footer'>
+            <p>copyright 2019</p>
+        </footer>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script>
+
+        const member = {
+            name: "Budi",
+            pesan: "ini pesan dari data",
+            isActive: true,
+            qty: 1,
+            namaDepan: 'budi',
+            namaBelakang: 'anto',
+            bilangan: 3,
+        }
+
+        const vm = new Vue({
+            el: '#app',
+            data: member,
+            methods: {
+                getName: function() {
+                    return 'hello, '+this.name
+                },
+                ubahNama: function(newName) {
+                    this.name = newName
+                    return this.getName()   // this disini, merujuk pada object vue. seperti data/method
+                }
+            },
+            computed: {
+                totalBayar: function() {
+                    return this.qty * 10000
+                },
+                namaLengkap: function() {
+                    return this.namaDepan + ' ' + this.namaBelakang
+                },
+                infoBilangan: function() {
+                    return this.bilangan % 2 === 0 ? 'Genap' : 'Ganjil'
+                }
+            }
+        })
+
+    </script>
+</body>
+</html>
