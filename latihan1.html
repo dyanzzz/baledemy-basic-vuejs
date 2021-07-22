@@ -11,6 +11,11 @@
             margin: 5%;
             font-family: 'Arimo', sans-serif;
         }
+        .active {
+            background: salmon;
+            border: 0;
+            padding: 5px;
+        }
     </style>
 </head>
 <body>
@@ -40,6 +45,11 @@
             <p>{{ bilangan }} adalah bilangan {{ infoBilangan }}. {{ gambarAlt }} </p>
             <br/>
 
+            <!-- class binding, di integrasikan dengan event on click -->
+            <button :class="{active: buttonCondition('home')}" @click="buttonAsignmentClick('home')">Home</button>
+            <button :class="{active: buttonCondition('about')}" @click="buttonAsignmentClick('about')">About</button>
+            <button :class="{active: buttonCondition('blog')}" @click="buttonAsignmentClick('blog')">Blog</button>
+
             <p>The progressive javascript framework</p>
             
         </header>
@@ -62,7 +72,8 @@
             bilangan: 1,
             link: '<a href="#">ini link dari data binding</a>',
             gambar: './images/vue.png',
-            gambarAlt: ''
+            gambarAlt: '',
+            menu: 'home',
         }
 
         const vm = new Vue({
@@ -85,6 +96,12 @@
                         this.gambar = "./images/vue.png"
                         this.gambarAlt = 'Vue'
                     }
+                },
+                buttonCondition: function(param) {
+                    return this.menu === param
+                },
+                buttonAsignmentClick: function(param) {
+                    return this.menu = param
                 }
             },
             computed: {
