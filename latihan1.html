@@ -50,6 +50,18 @@
             <button :class="{active: buttonCondition('about')}" @click="buttonAsignmentClick('about')">About</button>
             <button :class="{active: buttonCondition('blog')}" @click="buttonAsignmentClick('blog')">Blog</button>
 
+            <!-- two way databinding - directive view model -->
+            <input type="text" v-model="name">
+            <h1 v-text="name"></h1>
+
+            <!-- menggunakan two way binding dengan checkbox - directive view model-->
+            <div>
+                <label><input type="checkbox" value="React" v-model="kelas"> React</label>
+                <label><input type="checkbox" value="VueJs" v-model="kelas"> VueJs</label>
+                <label><input type="checkbox" value="Angular" v-model="kelas"> Angular</label>
+            </div>
+            <p>{{ kelas }}</p>
+
             <p>The progressive javascript framework</p>
             
         </header>
@@ -74,6 +86,7 @@
             gambar: './images/vue.png',
             gambarAlt: '',
             menu: 'home',
+            kelas: []
         }
 
         const vm = new Vue({
