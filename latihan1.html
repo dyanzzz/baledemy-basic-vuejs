@@ -19,10 +19,10 @@
 
             <!--<img src="{{ gambar }}" alt="VueJs" width="80"/>-->
             <!-- <img v-bind:src="gambar" alt="VueJs" width="80"/> -->
-            <img :src="gambar" alt="VueJs" width="80"/> <!-- shortcut dari vue bind -->
+            <img :src="gambar" alt="{{ gambarAlt }}" width="80"/> <!-- shortcut dari vue bind -->
             
             <!-- untuk mencetak nama dari directive data object binding -->
-            <h1 v-once>My Name is {{ name }}</h1>
+            <h1 v-once>Hello, My Name is {{ name }}.</h1>
             <br/>
 
             <!-- menambahkan directive vue dengan v-once === tidak akan diuypdate/tetap/constan -->
@@ -32,8 +32,12 @@
             <h2 v-text='pesan'></h2>
             <br/>
 
+            <!-- event -->
+            <!--<button v-on:click="handleClick()">Menggunakan event click</button>-->  <!-- menggunakan directive v-on untuk mengklik tombol-->
+            <button @click="handleClick()">Menggunakan event click</button> <!-- shortcut v-on:click menjadi @click-->
+
             <p>isActive pada data binding adalah {{ isActive ? "Active" : "Not Active" }}</p>
-            <p>{{ bilangan }} adalah bilangan {{ infoBilangan }}</p>
+            <p>{{ bilangan }} adalah bilangan {{ infoBilangan }}. {{ gambarAlt }} </p>
             <br/>
 
             <p>The progressive javascript framework</p>
@@ -55,9 +59,10 @@
             qty: 1,
             namaDepan: 'budi',
             namaBelakang: 'anto',
-            bilangan: 3,
+            bilangan: 1,
             link: '<a href="#">ini link dari data binding</a>',
-            gambar: './images/vue.png'
+            gambar: './images/vue.png',
+            gambarAlt: ''
         }
 
         const vm = new Vue({
@@ -70,6 +75,16 @@
                 ubahNama: function(newName) {
                     this.name = newName
                     return this.getName()   // this disini, merujuk pada object vue. seperti data/method
+                },
+                handleClick: function() {
+                    this.bilangan++
+                    if (this.bilangan % 2 === 0){
+                        this.gambar = "./images/react.png"
+                        this.gambarAlt = 'React'
+                    } else {
+                        this.gambar = "./images/vue.png"
+                        this.gambarAlt = 'Vue'
+                    }
                 }
             },
             computed: {
