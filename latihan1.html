@@ -52,7 +52,7 @@
 
             <!-- two way databinding - directive view model -->
             <input type="text" v-model="name">
-            <h1 v-text="name"></h1>
+            <h3 v-text="name"></h3>
 
             <!-- menggunakan two way binding dengan checkbox - directive view model-->
             <div>
@@ -61,6 +61,25 @@
                 <label><input type="checkbox" value="Angular" v-model="kelas"> Angular</label>
             </div>
             <p>{{ kelas }}</p>
+
+            <ul>
+                <li>Menggunakan v-for</li>
+                <!--<li v-for="k in kelas">
+                    {{ k }}
+                </li>-->    <!-- cara v-for 1 -->
+                <!-- <li v-for="item of kelas" v-text="item"></li> -->   <!-- cara v-for ke 2 menggunakan v-item -->
+                <li v-for="(item, i) of kelas">{{ i+1 }} - {{item}}</li>   <!-- cara v-for ke 3 mengakses indexnya -->
+            </ul>
+
+            <h3>Perulangan (1-5)</h3>
+            <ul>
+                <li v-for="x in 5">{{x}}</li>
+            </ul>
+
+            <h3>Mencari bilangan genap dari data {{ numbers }}</h3>
+            <ul>
+                <li v-for="x in cariBilanganGenap(numbers)">{{ x }}</li>
+            </ul>
 
             <p>The progressive javascript framework</p>
             
@@ -86,7 +105,8 @@
             gambar: './images/vue.png',
             gambarAlt: '',
             menu: 'home',
-            kelas: []
+            kelas: [],
+            numbers: [1, 2, 3, 4, 5],
         }
 
         const vm = new Vue({
@@ -115,7 +135,12 @@
                 },
                 buttonAsignmentClick: function(param) {
                     return this.menu = param
-                }
+                },
+                cariBilanganGenap: function(data) {
+                    return data.filter((angka) => {
+                        return angka % 2 === 0
+                    })
+                },
             },
             computed: {
                 totalBayar: function() {
