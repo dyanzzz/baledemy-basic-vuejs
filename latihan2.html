@@ -20,10 +20,14 @@
 </head>
 <body>
     <div id="app">
-        <header-component></header-component>
+        <header-component 
+            name="Vue"
+            gambar="./images/vue.png"
+        ></header-component>
 
         <main>
-            <kelas></kelas>
+            <kelas v-bind:items="kelas" v-bind:input="kelasBaru"></kelas>
+            <home></home>
         </main>
 
         <footer-component></footer-component>
@@ -32,18 +36,24 @@
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 
     <script>
+        const Home = {
+            template: `<div>Home</div>`
+        }
+
+
         // membuat component, harus sebelum instance object new Vuenya
         Vue.component('header-component', {
             template: `<header>
-                    <img :src="logo" alt="vueJS" width="80">
+                    <img :src="gambar" alt="vueJS" width="80">
                     <p>{{ tagline }}</p>
+                    <p>{{  'Hello ' + name }}
                 </header>`,
             data: function() {
                 return {
-                    logo: './images/vue.png',
                     tagline: 'The progressive javascript framework'
                 }
-            }
+            },
+            props: ['name', 'gambar']
         })
 
         Vue.component('footer-component', {
@@ -56,18 +66,18 @@
             template: `
                 <div>
                     <h3>Tambah Kelas</h3>
-                    <p><input type="text" placeholder="Nama Kelas" v-on:keyup.enter="submit" v-model="kelasBaru"></p>
+                    <p><input type="text" placeholder="Nama Kelas" v-on:keyup.enter="submit" v-model="input" ></p>
 
                     <hr/>
 
-                    <h3>Daftar Kelas {{ kelas.length }}</h3>
-                    <template v-if="kelas.length">  <!-- menggunakan element template untuk membungkus conditioning rendering -->
+                    <h3>Daftar Kelas {{ items.length }}</h3>
+                    <template v-if="items.length">  <!-- menggunakan element template untuk membungkus conditioning rendering -->
                         <ul>    <!-- v-if membuat elementnya benar" hilang tidak ditampilkan -->
-                            <!--<li v-for="k in kelas">
+                            <!--<li v-for="k in items">
                                 {{ k }}
                             </li>-->    <!-- cara v-for 1 -->
-                            <!-- <li v-for="item of kelas" v-text="item"></li> -->   <!-- cara v-for ke 2 menggunakan v-item -->
-                            <li v-for="(item, i) of kelas">{{ i+1 }} - {{item}}</li>   <!-- cara v-for ke 3 mengakses indexnya -->
+                            <!-- <li v-for="item of items" v-text="item"></li> -->   <!-- cara v-for ke 2 menggunakan v-item -->
+                            <li v-for="(item, i) of items">{{ i+1 }} - {{item}}</li>   <!-- cara v-for ke 3 mengakses indexnya -->
                         </ul>
                     </template>
                     
@@ -78,8 +88,7 @@
             `,
             data: function() {
                 return {
-                    kelas: [],
-                    kelasBaru: ''
+                    
                 }
             },
             methods: {
@@ -89,13 +98,16 @@
                     event.target.value = '' */
 
                     // this.kelas.push(this.kelasBaru) // tambah array dari belakang
-                    this.kelas.unshift(this.kelasBaru) // tambah array dari depan
-                    this.kelasBaru = ''
+                    this.items.unshift(this.input) // tambah array dari depan
+                    this.input = ''
                 }
             },
+            props: ['items', 'input']
         })
 
         const data = {
+            kelas: ['golang', 'css'],
+            kelasBaru: ''
         }
 
         const vm = new Vue({
@@ -104,6 +116,9 @@
             methods: {
             },
             computed: {
+            },
+            components: {
+                'home': Home
             }
         })
     </script>
