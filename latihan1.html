@@ -46,9 +46,12 @@
             <br/>
 
             <!-- class binding, di integrasikan dengan event on click -->
-            <button :class="{active: buttonCondition('home')}" @click="buttonAsignmentClick('home')">Home</button>
-            <button :class="{active: buttonCondition('about')}" @click="buttonAsignmentClick('about')">About</button>
-            <button :class="{active: buttonCondition('blog')}" @click="buttonAsignmentClick('blog')">Blog</button>
+            <!-- <button v-bind:class="{active: buttonCondition('home')}" v-on:click="buttonAsignmentClick('home')">Home</button> -->
+            <button :class="{active: buttonCondition('home')}" @click="buttonAsignmentClick('home', $event)">Home</button>  <!-- mengirim parameter $event -->
+            <button :class="{active: buttonCondition('about')}" @click="buttonAsignmentClick('about', $event)">About</button>
+            <a :class="{active: buttonCondition('blog')}" href="#" @click="buttonAsignmentClick('blog', $event)">Blog</a>
+            <!-- <a :class="{active: buttonCondition('blog')}" href="#" @click.prevent="buttonAsignmentClick('blog')">Blog</a> -->
+            <!-- vuejs membuat solusi yg lebih sederhana untuk modifikasi prefentDefault, dengan menambahkan modifier setelah property click -->
 
             <!-- two way databinding - directive view model -->
             <input type="text" v-model="name">
@@ -60,16 +63,19 @@
                 <label><input type="checkbox" value="VueJs" v-model="kelas"> VueJs</label>
                 <label><input type="checkbox" value="Angular" v-model="kelas"> Angular</label>
             </div>
-            <p v-if="kelas.length">{{ kelas }}</p>
+            <p v-show="kelas.length > 0">{{ kelas }}</p>    <!-- v-show hanya membuat display pada css menjadi none -->
             <h3>Daftar Kelas {{ kelas.length }}</h3>
-            <ul v-if="kelas.length">
-                <li>Menggunakan v-for</li>
-                <!--<li v-for="k in kelas">
-                    {{ k }}
-                </li>-->    <!-- cara v-for 1 -->
-                <!-- <li v-for="item of kelas" v-text="item"></li> -->   <!-- cara v-for ke 2 menggunakan v-item -->
-                <li v-for="(item, i) of kelas">{{ i+1 }} - {{item}}</li>   <!-- cara v-for ke 3 mengakses indexnya -->
-            </ul>
+            <template v-if="kelas.length">  <!-- menggunakan element template untuk membungkus conditioning rendering -->
+                <ul>    <!-- v-if membuat elementnya benar" hilang tidak ditampilkan -->
+                    <li>Menggunakan v-for</li>
+                    <!--<li v-for="k in kelas">
+                        {{ k }}
+                    </li>-->    <!-- cara v-for 1 -->
+                    <!-- <li v-for="item of kelas" v-text="item"></li> -->   <!-- cara v-for ke 2 menggunakan v-item -->
+                    <li v-for="(item, i) of kelas">{{ i+1 }} - {{item}}</li>   <!-- cara v-for ke 3 mengakses indexnya -->
+                </ul>
+            </template>
+            
             <ul v-else>
                 <li>Kelas belum tersedia</li>
             </ul>
@@ -97,7 +103,7 @@
     <script>
 
         const member = {
-            name: "Budi",
+            name: "VueJS",
             pesan: "Ini pesan dari data binding",
             isActive: true,
             qty: 1,
@@ -136,8 +142,11 @@
                 buttonCondition: function(param) {
                     return this.menu === param
                 },
-                buttonAsignmentClick: function(param) {
-                    return this.menu = param
+                buttonAsignmentClick: function(param, event) {
+                    console.log(event)
+                    event.preventDefault(); // dan mengembalikan parameter event sebagai preventDefault() 
+                    // => untuk membuat element html dinonaktifkan dan vueJS berhasil dieksekusi dengan baik
+                    this.menu = param
                 },
                 cariBilanganGenap: function(data) {
                     return data.filter((angka) => {
