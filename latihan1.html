@@ -96,7 +96,7 @@
 
         <!-- key modifiers -->
         <h3>Form Submit</h3>
-        <p><input type="text" placeholder="Nama Kelas" v-on:keyup.enter="submit"></p>
+        <p><input type="text" placeholder="Nama Kelas" v-on:keyup.enter="submit" v-model="kelasBaru"></p>
 
         <footer id='footer'>
             <p>Copyright 2019</p>
@@ -120,6 +120,7 @@
             menu: 'home',
             kelas: [],
             numbers: [1, 2, 3, 4, 5],
+            kelasBaru: ''
         }
 
         const vm = new Vue({
@@ -159,8 +160,11 @@
                 },
                 submit: function(event) {
                     const text = event.target.value
-                    this.kelas.push(text)
-                    event.target.value = ''
+                    /* this.kelas.push(text)
+                    event.target.value = '' */
+
+                    this.kelas.push(this.kelasBaru)
+                    this.kelasBaru = ''
                 }
             },
             computed: {
