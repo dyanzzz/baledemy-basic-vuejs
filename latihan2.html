@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arimo&display=swap">
+    <style>
+        body {
+            margin: 5%;
+            font-family: 'Arimo', sans-serif;
+        }
+        .active {
+            background: salmon;
+            border: 0;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header-component></header-component>
+
+        <main>
+            <kelas></kelas>
+        </main>
+
+        <footer-component></footer-component>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+    <script>
+        // membuat component, harus sebelum instance object new Vuenya
+        Vue.component('header-component', {
+            template: `<header>
+                    <img :src="logo" alt="vueJS" width="80">
+                    <p>{{ tagline }}</p>
+                </header>`,
+            data: function() {
+                return {
+                    logo: './images/vue.png',
+                    tagline: 'The progressive javascript framework'
+                }
+            }
+        })
+
+        Vue.component('footer-component', {
+            template: `<footer id="footer">
+                <p>Copyright 2021</p>
+            </footer>`
+        })
+
+        Vue.component('kelas', {
+            template: `
+                <div>
+                    <h3>Tambah Kelas</h3>
+                    <p><input type="text" placeholder="Nama Kelas" v-on:keyup.enter="submit" v-model="kelasBaru"></p>
+
+                    <hr/>
+
+                    <h3>Daftar Kelas {{ kelas.length }}</h3>
+                    <template v-if="kelas.length">  <!-- menggunakan element template untuk membungkus conditioning rendering -->
+                        <ul>    <!-- v-if membuat elementnya benar" hilang tidak ditampilkan -->
+                            <!--<li v-for="k in kelas">
+                                {{ k }}
+                            </li>-->    <!-- cara v-for 1 -->
+                            <!-- <li v-for="item of kelas" v-text="item"></li> -->   <!-- cara v-for ke 2 menggunakan v-item -->
+                            <li v-for="(item, i) of kelas">{{ i+1 }} - {{item}}</li>   <!-- cara v-for ke 3 mengakses indexnya -->
+                        </ul>
+                    </template>
+                    
+                    <ul v-else>
+                        <li>Kelas belum tersedia</li>
+                    </ul>
+                </div>
+            `,
+            data: function() {
+                return {
+                    kelas: [],
+                    kelasBaru: ''
+                }
+            },
+            methods: {
+                submit: function(event) {
+                    const text = event.target.value
+                    /* this.kelas.push(text)
+                    event.target.value = '' */
+
+                    // this.kelas.push(this.kelasBaru) // tambah array dari belakang
+                    this.kelas.unshift(this.kelasBaru) // tambah array dari depan
+                    this.kelasBaru = ''
+                }
+            },
+        })
+
+        const data = {
+        }
+
+        const vm = new Vue({
+            el: '#app',
+            data: data,
+            methods: {
+            },
+            computed: {
+            }
+        })
+    </script>
+
+</body>
+</html>
