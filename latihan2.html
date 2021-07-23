@@ -36,7 +36,9 @@
             <home></home>
         </main>
 
-        <footer-component></footer-component>
+        <footer-component>
+            <p>Copyright 2021</p>
+        </footer-component>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
@@ -63,9 +65,13 @@
         })
 
         Vue.component('footer-component', {
-            template: `<footer id="footer">
-                <p>Copyright 2021</p>
-            </footer>`
+            template: `
+                <footer id="footer">
+                    <slot></slot>
+                </footer>
+            `
+            // menggunakan slot, untuk merender attribute yg ada didalam komponen
+            // dalam hal ini contohnya adalah <p></p> didalam component <footer-component>
         })
 
         Vue.component('kelas', {
