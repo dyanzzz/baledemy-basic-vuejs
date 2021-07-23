@@ -60,15 +60,18 @@
                 <label><input type="checkbox" value="VueJs" v-model="kelas"> VueJs</label>
                 <label><input type="checkbox" value="Angular" v-model="kelas"> Angular</label>
             </div>
-            <p>{{ kelas }}</p>
-
-            <ul>
+            <p v-if="kelas.length">{{ kelas }}</p>
+            <h3>Daftar Kelas {{ kelas.length }}</h3>
+            <ul v-if="kelas.length">
                 <li>Menggunakan v-for</li>
                 <!--<li v-for="k in kelas">
                     {{ k }}
                 </li>-->    <!-- cara v-for 1 -->
                 <!-- <li v-for="item of kelas" v-text="item"></li> -->   <!-- cara v-for ke 2 menggunakan v-item -->
                 <li v-for="(item, i) of kelas">{{ i+1 }} - {{item}}</li>   <!-- cara v-for ke 3 mengakses indexnya -->
+            </ul>
+            <ul v-else>
+                <li>Kelas belum tersedia</li>
             </ul>
 
             <h3>Perulangan (1-5)</h3>
