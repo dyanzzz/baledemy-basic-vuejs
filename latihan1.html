@@ -94,6 +94,10 @@
             
         </header>
 
+        <!-- key modifiers -->
+        <h3>Form Submit</h3>
+        <p><input type="text" placeholder="Nama Kelas" v-on:keyup.enter="submit"></p>
+
         <footer id='footer'>
             <p>Copyright 2019</p>
         </footer>
@@ -153,6 +157,11 @@
                         return angka % 2 === 0
                     })
                 },
+                submit: function(event) {
+                    const text = event.target.value
+                    this.kelas.push(text)
+                    event.target.value = ''
+                }
             },
             computed: {
                 totalBayar: function() {
