@@ -27,7 +27,12 @@
         ></header-component>
 
         <main>
-            <kelas v-bind:items="kelas" v-bind:input="kelasBaru"></kelas>
+            <kelas 
+                v-bind:items="kelas" 
+                :input="kelasBaru" 
+                v-on:hapus-kelas="hapusKelas"
+                v-on:submit-kelas="submitKelas"
+            ></kelas>
             <home></home>
         </main>
 
@@ -40,7 +45,6 @@
         const Home = {
             template: `<div>Home</div>`
         }
-
 
         // membuat component, harus sebelum instance object new Vuenya
         Vue.component('header-component', {
@@ -68,7 +72,7 @@
             template: `
                 <div>
                     <h3>Tambah Kelas</h3>
-                    <p><input type="text" placeholder="Nama Kelas" v-on:keyup.enter="submit" v-model="input" ></p>
+                    <p><input type="text" placeholder="Nama Kelas" v-on:keyup.enter="$emit('submit-kelas', $event)" ></p>
 
                     <hr/>
 
@@ -79,7 +83,9 @@
                                 {{ k }}
                             </li>-->    <!-- cara v-for 1 -->
                             <!-- <li v-for="item of items" v-text="item"></li> -->   <!-- cara v-for ke 2 menggunakan v-item -->
-                            <li v-for="(item, i) of items">{{ i+1 }} - {{item}}</li>   <!-- cara v-for ke 3 mengakses indexnya -->
+                            <li v-for="(item, i) of items">
+                                {{ i+1 }} - {{item}} - <a href="#" v-on:click.prevent="$emit('hapus-kelas', i)">Hapus</a>
+                            </li>   <!-- cara v-for ke 3 mengakses indexnya -->
                         </ul>
                     </template>
                     
@@ -90,23 +96,14 @@
             `,
             data: function() {
                 return {
-                    
                 }
             },
             methods: {
-                submit: function(event) {
-                    const text = event.target.value
-                    /* this.kelas.push(text)
-                    event.target.value = '' */
-
-                    // this.kelas.push(this.kelasBaru) // tambah array dari belakang
-                    this.items.unshift(this.input) // tambah array dari depan
-                    this.input = ''
-                }
             },
-            props: ['items', 'input']
+            props: ['items']
         })
 
+        // parent component
         const data = {
             kelas: ['golang', 'css'],
             kelasBaru: ''
@@ -116,11 +113,24 @@
             el: '#app',
             data: data,
             methods: {
+                hapusKelas: function(index) {
+                    this.kelas.splice(index, 1)
+                },
+                submitKelas: function(event) {
+                    const text = event.target.value
+                    /* this.kelas.push(text)
+                    event.target.value = '' */
+
+                    // this.kelas.push(this.kelasBaru) // tambah array dari belakang
+                    this.kelas.unshift(text) // tambah array dari depan
+                    event.target.value = ''
+                }
             },
             computed: {
             },
             components: {
-                'home': Home
+                'home': Home,
+                //'hapusKelas': HapusKelas
             }
         })
     </script>
