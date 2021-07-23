@@ -20,6 +20,7 @@
 </head>
 <body>
     <div id="app">
+        <!-- memasang props sebagai parameter component -->
         <header-component 
             name="Vue"
             gambar="./images/vue.png"
@@ -43,6 +44,7 @@
 
         // membuat component, harus sebelum instance object new Vuenya
         Vue.component('header-component', {
+            // implementasi props didalam templates
             template: `<header>
                     <img :src="gambar" alt="vueJS" width="80">
                     <p>{{ tagline }}</p>
@@ -53,7 +55,7 @@
                     tagline: 'The progressive javascript framework'
                 }
             },
-            props: ['name', 'gambar']
+            props: ['name', 'gambar']   // menggunakan props
         })
 
         Vue.component('footer-component', {
