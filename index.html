@@ -281,7 +281,23 @@
             methods: {
                 hapusKelas: function(id) {
                     //this.kelas.splice(index, 1)  // splice menggunakan index sebagai parameter
-                    this.kelas = this.kelas.filter((item) => item.id != id)
+                    
+                    swal({
+                        title: "Are you sure?",
+                        text: "Once deleted, you will not be able to recover!",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                    })
+                    .then((willDelete) => {
+                        if (willDelete) {
+                            swal("Kelas berhasil dihapus!", {
+                                icon: "warning",
+                            });
+                            this.kelas = this.kelas.filter((item) => item.id != id)
+                            localStorage.setItem('kelas', JSON.stringify(this.kelas))
+                        }
+                    });
                 },
                 submitKelas: function(data) {
                     //console.log(data)
