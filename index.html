@@ -65,8 +65,7 @@
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
     <script src="https://unpkg.com/uuid@latest/dist/umd/uuidv4.min.js"></script>
-
-
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
     <script>
         const Home = {
@@ -290,6 +289,11 @@
                     this.kelas.push(data) // tambah array dari belakang
                     //event.target.value = ''
                     localStorage.setItem('kelas', JSON.stringify(this.kelas))
+                    swal({
+                        title: data.judul,
+                        text: "Kelas berhasil disubmit!",
+                        icon: "success",
+                    });
                 }
             },
             computed: {
