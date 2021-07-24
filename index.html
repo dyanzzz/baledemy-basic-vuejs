@@ -107,6 +107,7 @@
                             <img v-if="previewing" :src="previewing" width="200"/>
                             <input 
                                 type="file" 
+                                accept="image/*"
                                 ref="gambar"
                                 v-on:change="upload">
                         </div>
@@ -192,6 +193,8 @@
                 },
                 upload: function(event) {
                     const image = event.target.files[0]
+                    console.log(event)
+                    console.log(image)
                     this.kelas.gambar = image.name
                     this.previewing = URL.createObjectURL(image)
                 },
@@ -252,7 +255,7 @@
 
         // parent component
         const data = {
-            kelas: [
+            /* kelas: [
                 { 
                     id: 1, 
                     judul: "VueJS", 
@@ -265,13 +268,17 @@
                     deskripsi: "React js indonesia", 
                     gambar: "react.png"
                 }
-            ],
+            ], */
+            kelas: []
         }
 
         const vm = new Vue({
             el: '#app',
             router,
             data: data,
+            created() {
+                this.kelas = JSON.parse(localStorage.getItem('kelas')) || []
+            },
             methods: {
                 hapusKelas: function(id) {
                     //this.kelas.splice(index, 1)  // splice menggunakan index sebagai parameter
@@ -282,7 +289,7 @@
 
                     this.kelas.push(data) // tambah array dari belakang
                     //event.target.value = ''
-                    
+                    localStorage.setItem('kelas', JSON.stringify(this.kelas))
                 }
             },
             computed: {
