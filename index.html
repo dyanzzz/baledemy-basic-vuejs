@@ -16,6 +16,13 @@
             border: 0;
             padding: 5px;
         }
+        .error {
+            color: red;
+            size: 8px;
+        }
+        .input-group {
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
@@ -43,7 +50,6 @@
             <!-- menampilkan dan mencocokan component apa yg akan ditampilkan -->
             <router-view
                 v-bind:items="kelas" 
-                :input="kelasBaru" 
                 v-on:hapus-kelas="hapusKelas"
                 v-on:submit-kelas="submitKelas"
             ></router-view>
@@ -71,6 +77,10 @@
             template: `<div>About</div>`
         }
 
+        const NotFound = {
+            template: `<div>Halaman tidak ditemukan...</div>`
+        }
+
         const Kelas = {
             props: ['items'],
             template: `
@@ -78,21 +88,25 @@
                     <h3>Tambah Kelas</h3>
 
                     <form v-on:submit.prevent="submitKelas">
-                        <p>
+                        <div class="input-group">
                             <input 
                                 type="text" placeholder="Nama Kelas" 
+                                v-on:change="cekLength('judul')"
                                 v-model="kelas.judul">
-                        </p>
+                            <div v-if="error.judul" class='error'>{{ error.judul }}</div>
+                        </div>
                         <div>
                             <textarea 
                                 name="deskripsi" id="deskripsi" cols="30" rows="3" 
                                 v-model="kelas.deskripsi"
+                                v-on:change="cekLength('deskripsi')"
                             ></textarea>
+                            <div v-if="error.deskripsi" class='error'>{{ error.deskripsi }}</div>
                         </div>
                         <div class="input-group">
-                            <img v-if="previewing" :src="previewing" width="80"/>
+                            <img v-if="previewing" :src="previewing" width="200"/>
                             <input 
-                                type="file"
+                                type="file" 
                                 ref="gambar"
                                 v-on:change="upload">
                         </div>
@@ -134,36 +148,66 @@
                         deskripsi: '',
                         gambar: '',
                     },
-                    previewing: ''
+                    previewing: '',
+                    error: {
+                        judul: '',
+                        deskripsi: '',
+                    }
                 }
             },
             methods: {
                 submitKelas: function() {
-                    const data = {
-                        id: uuidv4(),
-                        judul: this.kelas.judul,
-                        deskripsi: this.kelas.deskripsi,
-                        gambar: this.kelas.gambar
+                    this.error.judul = ''
+                    this.error.deskripsi = ''
+
+                    if (this.kelas.judul === '') {
+                        this.error.judul = 'Judul is required'
                     }
-                    this.$emit('submit-kelas', data)
+                    if (this.kelas.deskripsi === '') {
+                        this.error.deskripsi = 'Deskripsi is required'
+                    }
 
-                    /* this.kelas = {
-                        judul: '',
-                        deskripsi: '',
-                        gambar: '',
-                    },
-                    this.previewing = '' */
+                    if (this.kelas.judul && this.kelas.deskripsi) {
+                        const data = {
+                            id: uuidv4(),
+                            judul: this.kelas.judul,
+                            deskripsi: this.kelas.deskripsi,
+                            gambar: this.kelas.gambar
+                        }
+                        this.$emit('submit-kelas', data)
 
-                    this.kelas.judul = ""
-                    this.kelas.deskripsi = ""
-                    this.kelas.gambar = ""
-                    this.previewing = ""
-                    this.$refs.gambar.value = "" // untuk menghapus value dari input type filenya
+                        /* this.kelas = {
+                            judul: '',
+                            deskripsi: '',
+                            gambar: '',
+                        },
+                        this.previewing = '' */
+
+                        this.kelas.judul = ""
+                        this.kelas.deskripsi = ""
+                        this.kelas.gambar = ""
+                        this.previewing = ""
+                        this.$refs.gambar.value = "" // untuk menghapus value dari input type filenya
+                    }
                 },
                 upload: function(event) {
                     const image = event.target.files[0]
                     this.kelas.gambar = image.name
                     this.previewing = URL.createObjectURL(image)
+                },
+                cekLength: function(field) {
+                    if (field == 'judul') {
+                        if(this.error.judul.length > 0) {
+                            this.error.judul = ''
+                        }
+                    }
+
+                    if (field == 'deskripsi') {
+                        if(this.error.deskripsi.length > 0) {
+                            this.error.deskripsi = ''
+                        }
+                    }
+
                 }
             },
         }
@@ -197,7 +241,8 @@
         const routes = [
             { path: '/', component: Home },
             { path: '/about', component: About },
-            { path: '/kelas', component: Kelas }
+            { path: '/kelas', component: Kelas },
+            { path: '*', component: NotFound }
         ]
 
         const router = new VueRouter({
@@ -221,7 +266,6 @@
                     gambar: "react.png"
                 }
             ],
-            kelasBaru: ''
         }
 
         const vm = new Vue({
