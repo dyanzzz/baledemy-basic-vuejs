@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arimo&display=swap">
+    <style>
+        body {
+            margin: 5%;
+            font-family: 'Arimo', sans-serif;
+        }
+        .active {
+            background: salmon;
+            border: 0;
+            padding: 5px;
+        }
+        .error {
+            color: red;
+            size: 8px;
+        }
+        .input-group {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- memasang props sebagai parameter component -->
+        <header-component 
+            name="VueJS"
+            gambar="/images/vue.png"
+        ></header-component>
+
+        <nav>
+            <router-link to="/index-firebase.html">Home</router-link>
+            <router-link to="/index-firebase.html/about">About</router-link>
+            <router-link to="/index-firebase.html/kelas">Kelas</router-link>
+        </nav>
+
+        <main>
+            <!-- <kelas 
+                v-bind:items="kelas" 
+                :input="kelasBaru" 
+                v-on:hapus-kelas="hapusKelas"
+                v-on:submit-kelas="submitKelas"
+            ></kelas> -->
+            <!-- <home></home> -->
+            <!-- menampilkan dan mencocokan component apa yg akan ditampilkan -->
+            <router-view
+                v-bind:items="kelas" 
+                v-on:hapus-kelas="hapusKelas"
+                v-on:submit-kelas="submitKelas"
+            ></router-view>
+        </main>
+
+        
+
+        <footer-component>
+            <p>Copyright 2021</p>
+        </footer-component>
+    </div>
+
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    <script src="https://unpkg.com/uuid@latest/dist/umd/uuidv4.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-database.js"></script>
+    <script src="firebase.js"></script>
+
+    <script>
+        const Home = {
+            template: `<div>Home</div>`
+        }
+
+        const About = {
+            template: `<div>About</div>`
+        }
+
+        const NotFound = {
+            template: `<div>Halaman tidak ditemukan...</div>`
+        }
+
+        const DetailKelas = {
+            template: `<div>
+                <template v-if="detailKelas">
+                    <img :src="urlGambar(detailKelas.gambar)" width="200"/>
+                    <h3>{{ detailKelas.judul }}</h3>
+                    <p>{{ detailKelas.deskripsi }}</p>
+                    <router-link to="/index-firebase.html/kelas">Kembali</router-link>
+                </template>
+                <p v-else>kelas tidak ada</p>
+            </div>`,
+            data: function() {
+                return {
+                    detailKelas: {}
+                }
+            },
+            methods: {
+                filterKelas() {
+                    //const kelas = JSON.parse(localStorage.getItem('kelas'))
+                    const id = this.$route.params.idKelas
+                    //const dataDetailKelas = kelas.filter((data) => data.id === id)
+
+                    const kelasDetailRef = db.ref('kelas/'+id)
+                    kelasDetailRef.on('value', (item) => {
+                        this.detailKelas = item.val()
+                    })
+                    //this.detailKelas = dataDetailKelas[0]
+                },
+                urlGambar: function(gambar) {
+                    return gambar ? "/images/"+gambar : ""
+                }
+            },
+            created() {
+                this.filterKelas()
+            }
+        }
+
+        const Kelas = {
+            props: ['items'],
+            template: `
+                <div>
+                    <h3>Tambah Kelas</h3>
+
+                    <form v-on:submit.prevent="submitKelas">
+                        <div class="input-group">
+                            <input 
+                                type="text" placeholder="Nama Kelas" 
+                                v-on:change="cekLength('judul')"
+                                v-model="kelas.judul">
+                            <div v-if="error.judul" class='error'>{{ error.judul }}</div>
+                        </div>
+                        <div>
+                            <textarea 
+                                name="deskripsi" id="deskripsi" cols="30" rows="3" 
+                                v-model="kelas.deskripsi"
+                                v-on:change="cekLength('deskripsi')"
+                            ></textarea>
+                            <div v-if="error.deskripsi" class='error'>{{ error.deskripsi }}</div>
+                        </div>
+                        <div class="input-group">
+                            <img v-if="previewing" :src="previewing" width="200"/>
+                            <input 
+                                type="file" 
+                                accept="image/*"
+                                ref="gambar"
+                                v-on:change="upload">
+                        </div>
+                        <button 
+                            type="submit"
+                        >Submit</button>
+                    </form>
+
+                    <hr/>
+
+                    <h3>Daftar Kelas {{ items.length }}</h3>
+                    <template v-if="items.length">  <!-- menggunakan element template untuk membungkus conditioning rendering -->
+                        <ul>    <!-- v-if membuat elementnya benar" hilang tidak ditampilkan -->
+                            
+                            <!--<li v-for="k in items">
+                                {{ k }}
+                            </li>-->    <!-- cara v-for 1 -->
+                            <!-- <li v-for="item of items" v-text="item"></li> -->   <!-- cara v-for ke 2 menggunakan v-item -->
+                            
+                            <li v-for="(item, index) of items">
+                                <img :src="'../images/' + item.gambar" width="80"/>
+                                <p>
+                                    {{ index+1 }} - {{item.judul}} - 
+                                    <a href="#" v-on:click.prevent="$emit('hapus-kelas', item.id)">Hapus</a> - 
+                                    <router-link :to="'/index-firebase.html/kelas/'+item.id">Lihat kelas</router-link>
+                                </p>
+                            </li>   <!-- cara v-for ke 3 mengakses indexnya -->
+                        </ul>
+                    </template>
+                    
+                    <ul v-else>
+                        <li>Kelas belum tersedia</li>
+                    </ul>
+                </div>
+            `,
+            data: function() {
+                return {
+                    kelas: {
+                        judul: '',
+                        deskripsi: '',
+                        gambar: '',
+                    },
+                    previewing: '',
+                    error: {
+                        judul: '',
+                        deskripsi: '',
+                    }
+                }
+            },
+            methods: {
+                submitKelas: function() {
+                    this.error.judul = ''
+                    this.error.deskripsi = ''
+
+                    if (this.kelas.judul === '') {
+                        this.error.judul = 'Judul is required'
+                    }
+                    if (this.kelas.deskripsi === '') {
+                        this.error.deskripsi = 'Deskripsi is required'
+                    }
+
+                    if (this.kelas.judul && this.kelas.deskripsi) {
+                        const data = {
+                            id: uuidv4(),
+                            judul: this.kelas.judul,
+                            deskripsi: this.kelas.deskripsi,
+                            gambar: this.kelas.gambar
+                        }
+                        this.$emit('submit-kelas', data)
+
+                        /* this.kelas = {
+                            judul: '',
+                            deskripsi: '',
+                            gambar: '',
+                        },
+                        this.previewing = '' */
+
+                        this.kelas.judul = ""
+                        this.kelas.deskripsi = ""
+                        this.kelas.gambar = ""
+                        this.previewing = ""
+                        this.$refs.gambar.value = "" // untuk menghapus value dari input type filenya
+                    }
+                },
+                upload: function(event) {
+                    const image = event.target.files[0]
+                    console.log(event)
+                    console.log(image)
+                    this.kelas.gambar = image.name
+                    this.previewing = URL.createObjectURL(image)
+                },
+                cekLength: function(field) {
+                    if (field == 'judul') {
+                        if(this.error.judul.length > 0) {
+                            this.error.judul = ''
+                        }
+                    }
+
+                    if (field == 'deskripsi') {
+                        if(this.error.deskripsi.length > 0) {
+                            this.error.deskripsi = ''
+                        }
+                    }
+
+                }
+            },
+        }
+
+        // membuat component, harus sebelum instance object new Vuenya
+        Vue.component('header-component', {
+            // implementasi props didalam templates
+            template: `<header>
+                    <img :src="gambar" alt="vueJS" width="80">
+                    <p>{{ tagline }}</p>
+                    <p>{{ 'Hello ' + name }}</p>
+                </header>`,
+            data: function() {
+                return {
+                    tagline: 'The progressive javascript framework'
+                }
+            },
+            props: ['name', 'gambar']   // menggunakan props
+        })
+
+        Vue.component('footer-component', {
+            template: `
+                <footer id="footer">
+                    <slot></slot>
+                </footer>
+            `
+            // menggunakan slot, untuk merender attribute yg ada didalam komponen
+            // dalam hal ini contohnya adalah <p></p> didalam component <footer-component>
+        })
+
+        const routes = [
+            { path: '/index-firebase.html', component: Home },
+            { path: '/index-firebase.html/about', component: About },
+            { path: '/index-firebase.html/kelas', component: Kelas },
+            { path: '/index-firebase.html/kelas/:idKelas', component: DetailKelas },
+            { path: '*', component: NotFound }
+        ]
+
+        const router = new VueRouter({
+            mode: 'history',
+            routes // short for `routes: routes`
+        })
+
+        // parent component
+        const data = {
+            /* kelas: [
+                { 
+                    id: 1, 
+                    judul: "VueJS", 
+                    deskripsi: "The progressive javascript framework", 
+                    gambar: "vue.png"
+                },
+                { 
+                    id: 2, 
+                    judul: "React", 
+                    deskripsi: "React js indonesia", 
+                    gambar: "react.png"
+                }
+            ], */
+            kelas: []
+        }
+
+        const vm = new Vue({
+            el: '#app',
+            router,
+            data: data,
+            created() {
+                //this.kelas = JSON.parse(localStorage.getItem('kelas')) || []
+                
+                // (nama collection, result berhasil, error)
+                kelasRef.on('value', this.resultData, this.errordata)
+            },
+            methods: {
+                hapusKelas: function(id) {
+                    //this.kelas.splice(index, 1)  // splice menggunakan index sebagai parameter
+                    
+                    swal({
+                        title: "Are you sure?",
+                        text: "Once deleted, you will not be able to recover!",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                    })
+                    .then((willDelete) => {
+                        if (willDelete) {
+                            swal("Kelas berhasil dihapus!", {
+                                icon: "warning",
+                            });
+                            //this.kelas = this.kelas.filter((item) => item.id != id)
+                            //localStorage.setItem('kelas', JSON.stringify(this.kelas))
+
+                            db.ref('/kelas/'+id).remove()
+                        }
+                    });
+                },
+                submitKelas: function(data) {
+                    //console.log(data)
+
+                    //this.kelas.push(data) // tambah array dari belakang
+                    //localStorage.setItem('kelas', JSON.stringify(this.kelas))
+                    this.kelas = []
+                    kelasRef.push({
+                        judul: data.judul,
+                        deskripsi: data.deskripsi,
+                        gambar: data.gambar
+                    })
+
+                    swal({
+                        title: data.judul,
+                        text: "Kelas berhasil disubmit!",
+                        icon: "success",
+                    });
+                },
+                resultData(items) {
+                    //console.log(items.val())
+                    this.kelas = []
+                    items.forEach((item) => {
+                        const data = {
+                            id: item.key,
+                            judul: item.val().judul,
+                            deskripsi: item.val().deskripsi,
+                            gambar: item.val().gambar
+                        }
+
+                        this.kelas.push(data)
+                    })
+                },
+                errorData(error) {
+                    console.log(error)
+                }
+            },
+            computed: {
+            },
+            components: {
+                'home': Home,
+                //'hapusKelas': HapusKelas
+            }
+        })
+    </script>
+
+</body>
+</html>
