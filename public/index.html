@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arimo&display=swap">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- memasang props sebagai parameter component -->
+        <header-component 
+            name="VueJS"
+            gambar="/images/vue.png"
+        ></header-component>
+
+        <nav>
+            <router-link to="/">Home</router-link>
+            <router-link to="/about">About</router-link>
+            <router-link to="/kelas">Kelas</router-link>
+        </nav>
+
+        <main>
+            <!-- <kelas 
+                v-bind:items="kelas" 
+                :input="kelasBaru" 
+                v-on:hapus-kelas="hapusKelas"
+                v-on:submit-kelas="submitKelas"
+            ></kelas> -->
+            <!-- <home></home> -->
+            <!-- menampilkan dan mencocokan component apa yg akan ditampilkan -->
+            <router-view
+                v-bind:items="kelas" 
+                v-on:hapus-kelas="hapusKelas"
+                v-on:submit-kelas="submitKelas"
+            ></router-view>
+        </main>
+
+        
+
+        <footer-component>
+            <p>Copyright 2021</p>
+        </footer-component>
+    </div>
+
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    <script src="https://unpkg.com/uuid@latest/dist/umd/uuidv4.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-database.js"></script>
+    <script src="/firebase.js"></script>
+
+    <script src="/components.js"></script>
+    <script src="/router.js"></script>
+
+    <script>
+        // parent component
+        const data = {
+            /* kelas: [
+                { 
+                    id: 1, 
+                    judul: "VueJS", 
+                    deskripsi: "The progressive javascript framework", 
+                    gambar: "vue.png"
+                },
+                { 
+                    id: 2, 
+                    judul: "React", 
+                    deskripsi: "React js indonesia", 
+                    gambar: "react.png"
+                }
+            ], */
+            kelas: []
+        }
+
+        const vm = new Vue({
+            el: '#app',
+            router,
+            data: data,
+            created() {
+                //this.kelas = JSON.parse(localStorage.getItem('kelas')) || []
+                
+                // (nama collection, result berhasil, error)
+                kelasRef.on('value', this.resultData, this.errordata)
+            },
+            methods: {
+                hapusKelas: function(id) {
+                    //this.kelas.splice(index, 1)  // splice menggunakan index sebagai parameter
+                    
+                    swal({
+                        title: "Are you sure?",
+                        text: "Once deleted, you will not be able to recover!",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                    })
+                    .then((willDelete) => {
+                        if (willDelete) {
+                            swal("Kelas berhasil dihapus!", {
+                                icon: "warning",
+                            });
+                            //this.kelas = this.kelas.filter((item) => item.id != id)
+                            //localStorage.setItem('kelas', JSON.stringify(this.kelas))
+
+                            db.ref('/kelas/'+id).remove()
+                        }
+                    });
+                },
+                submitKelas: function(data) {
+                    //console.log(data)
+
+                    //this.kelas.push(data) // tambah array dari belakang
+                    //localStorage.setItem('kelas', JSON.stringify(this.kelas))
+                    this.kelas = []
+                    kelasRef.push({
+                        judul: data.judul,
+                        deskripsi: data.deskripsi,
+                        gambar: data.gambar
+                    })
+
+                    swal({
+                        title: data.judul,
+                        text: "Kelas berhasil disubmit!",
+                        icon: "success",
+                    });
+                },
+                resultData(items) {
+                    //console.log(items.val())
+                    this.kelas = []
+                    items.forEach((item) => {
+                        const data = {
+                            id: item.key,
+                            judul: item.val().judul,
+                            deskripsi: item.val().deskripsi,
+                            gambar: item.val().gambar
+                        }
+
+                        this.kelas.push(data)
+                    })
+                },
+                errorData(error) {
+                    console.log(error)
+                }
+            },
+            computed: {
+            },
+            components: {
+                'home': Home,
+                //'hapusKelas': HapusKelas
+            }
+        })
+    </script>
+
+</body>
+</html>
